@@ -36,5 +36,5 @@ content-type: application/json
 
 ### DELETE SINGLE DATA
 
-PUT http://localhost:3000/api/users/${ID} HTTP/1.1
+DELETE http://localhost:3000/api/users/${ID} HTTP/1.1
 content-type: application/json
