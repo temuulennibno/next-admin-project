@@ -49,7 +49,7 @@ export const PUT = async (req, { params }) => {
 
   if (!id) return NextResponse.json({ message: "id хоосон байж болохгүй" }, { status: 400 });
 
-  const { lastname, firstname, email, imageUrl } = req.json();
+  const { lastname, firstname, email, imageUrl } = await req.json();
 
   if (!lastname) return NextResponse.json({ message: "lastname хоосон байж болохгүй" }, { status: 400 });
   if (!firstname) return NextResponse.json({ message: "firstname хоосон байж болохгүй" }, { status: 400 });

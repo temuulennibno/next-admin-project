@@ -6,12 +6,11 @@ const filePath = "./data/users.json";
 
 export const GET = async () => {
   const fileData = await fs.readFile(filePath, "utf-8");
-  users = JSON.parse(fileData);
-  return NextResponse.json(users);
+  return NextResponse.json(JSON.parse(fileData));
 };
 
 export const POST = async (req) => {
-  const { lastname, firstname, email, imageUrl } = req.json();
+  const { lastname, firstname, email, imageUrl } = await req.json();
 
   if (!lastname) return NextResponse.json({ message: "lastname хоосон байж болохгүй" }, { status: 400 });
   if (!firstname) return NextResponse.json({ message: "firstname хоосон байж болохгүй" }, { status: 400 });
