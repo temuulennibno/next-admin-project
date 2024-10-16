@@ -15,12 +15,14 @@ datasource db {
 
 model Post {
   id          String   @id @default(uuid()) @map("_id")
-  uid         String   @unique @map("id")
   title       String
   description String
   content     String
-  image       String   @map("avatar")
+  image       String
   categories  String[]
+  authorName  String
+  authorImage String
+  createdAt   String
 
   @@map("hop")
 }

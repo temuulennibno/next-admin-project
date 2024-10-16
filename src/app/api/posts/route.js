@@ -9,10 +9,10 @@ export const GET = async (req) => {
 
   const totalElements = await prisma.post.count();
   const totalPages = Math.ceil(totalElements / size);
-  const rawItems = await prisma.post.findMany({ take: size, skip: (1 - page) * size });
+  const items = await prisma.post.findMany({ take: size, skip: (1 - page) * size });
 
   return NextResponse.json({
-    items: rawItems.map((item) => ({ ...item, id: item.uid })),
+    items,
     pageInfo: {
       totalPages,
       totalElements,

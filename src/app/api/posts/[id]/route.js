@@ -7,7 +7,7 @@ export const GET = async (_, { params }) => {
   if (!id) return NextResponse.json({ message: "id хоосон байж болохгүй" }, { status: 400 });
   try {
     const prisma = new PrismaClient();
-    const post = await prisma.post.findUnique({ where: { uid: id } });
+    const post = await prisma.post.findUnique({ where: { id } });
 
     if (!post) return NextResponse.json({ message: "Мэдээ олдсонгүй" }, { status: 404 });
 
