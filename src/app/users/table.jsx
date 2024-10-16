@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-
+import { useState } from "react";
 import { Table, TableCell, TableHead, TableHeader, TableRow, TableBody } from "@/components/ui/table";
 import {
   DropdownMenu,
@@ -17,11 +16,22 @@ import { Input } from "@/components/ui/input";
 import { MoreHorizontal, Settings } from "lucide-react";
 
 export function UsersTable(props) {
-  const { data } = props;
+  const { data, limit, onDelete } = props;
+
+  const [query, setQuery] = useState("");
+
+  let filteredData = data.filter((item) => {
+    return (
+      item.firstname.toLowerCase().includes(query.toLowerCase()) ||
+      item.lastname.toLowerCase().includes(query.toLowerCase()) ||
+      item.email.toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <Input placeholder="Нэрээр хайх..." className="max-w-sm" />
+        <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Нэрээр хайх..." className="max-w-sm" />
       </div>
       <div className="border rounded-md">
         <Table>
@@ -38,7 +48,7 @@ export function UsersTable(props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.slice(0, 10).map((item, index) => (
+            {filteredData?.slice(0, limit).map((item, index) => (
               <TableRow key={item.id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableHead>
@@ -47,9 +57,9 @@ export function UsersTable(props) {
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </TableHead>
-                <TableHead>Нармандах</TableHead>
-                <TableHead>Тэмүүлэн</TableHead>
-                <TableHead>boldoo@gmail.com</TableHead>
+                <TableHead>{item.lastname}</TableHead>
+                <TableHead>{item.firstname}</TableHead>
+                <TableHead>{item.email}</TableHead>
                 <TableHead className="w-1">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -63,7 +73,13 @@ export function UsersTable(props) {
                       <DropdownMenuItem onClick={() => navigator.clipboard.writeText("temkanibno@gmail.com")}>Copy Email</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          onDelete(item.id);
+                        }}
+                      >
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableHead>

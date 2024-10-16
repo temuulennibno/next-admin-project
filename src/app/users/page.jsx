@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 
 const Users = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [limit, setLimit] = useState(10);
 
   const [data, setData] = useState([]);
 
@@ -19,6 +20,30 @@ const Users = () => {
         setData(data);
       });
   }, []);
+
+  const handleOnDelete = (id) => {
+    if (confirm("Ustgalaa shdee?")) {
+      fetch("/api/users/" + id, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then(() => {
+          setData([...data].filter((item) => item.id !== id));
+        });
+    }
+  };
+
+  const handleOnCreate = (values) => {
+    fetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify(values),
+    })
+      .then((res) => res.json())
+      .then((newData) => {
+        setData([...data, newData.data]);
+        setCreateModalOpen(false);
+      });
+  };
 
   return (
     <div>
@@ -32,14 +57,18 @@ const Users = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <UsersTable data={data} />
+          <UsersTable onDelete={handleOnDelete} limit={limit} data={data} />
           <div className="flex justify-center p-8">
-            <Button variant="outline">Load more...</Button>
+            {data.length > limit && (
+              <Button onClick={() => setLimit(limit + 10)} variant="outline">
+                Load more...
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
 
-      <UserCreateDialog open={createModalOpen} onClose={setCreateModalOpen} />
+      <UserCreateDialog onCreate={handleOnCreate} open={createModalOpen} onClose={setCreateModalOpen} />
     </div>
   );
 };
