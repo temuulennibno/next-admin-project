@@ -47,8 +47,8 @@ export function UsersTable(props) {
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </TableHead>
-                <TableHead>Нармандах</TableHead>
-                <TableHead>Тэмүүлэн</TableHead>
+                <TableHead>{item.lastname}</TableHead>
+                <TableHead>{item.firstname}</TableHead>
                 <TableHead>boldoo@gmail.com</TableHead>
                 <TableHead className="w-1">
                   <DropdownMenu>
