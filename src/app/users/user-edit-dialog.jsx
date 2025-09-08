@@ -2,13 +2,43 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export const UserCreateDialog = ({ open, onCreateUser, onClose }) => {
+export const UserEditDialog = ({ user, open, onClose }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email);
+      setFirstname(user.firstname);
+      setLastname(user.lastname);
+      setImageUrl(user.imageUrl);
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    const response = await fetch("/api/users/" + user.id, {
+      method: "PUT",
+      body: JSON.stringify({
+        imageUrl,
+        lastname,
+        firstname,
+        email,
+      }),
+    });
+    const { data, message } = await response.json();
+
+    if (response.status === 200) {
+      toast.success(message);
+      onClose(false);
+    } else {
+      toast.error(message);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -38,12 +68,7 @@ export const UserCreateDialog = ({ open, onCreateUser, onClose }) => {
           <Button onClick={() => onClose(false)} variant="outline" type="button">
             Cancel
           </Button>
-          <Button
-            onClick={() => {
-              onCreateUser({ imageUrl, lastname, firstname, email });
-            }}
-            type="submit"
-          >
+          <Button onClick={handleSave} type="submit">
             Save
           </Button>
         </DialogFooter>

@@ -15,13 +15,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MoreHorizontal, Settings } from "lucide-react";
+import { toast } from "sonner";
 
 export function UsersTable(props) {
-  const { data } = props;
+  const { data, limit, onEditUser, onDeleteUser } = props;
+  const [query, setQuery] = React.useState("");
+
+  const filteredData = data.filter(
+    (item) => item.firstname.toLowerCase().includes(query.toLowerCase()) || item.lastname.toLowerCase().includes(query.toLowerCase())
+  );
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <Input placeholder="Нэрээр хайх..." className="max-w-sm" />
+        <Input
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+          }}
+          placeholder="Нэрээр хайх..."
+          className="max-w-sm"
+        />
       </div>
       <div className="border rounded-md">
         <Table>
@@ -38,7 +52,7 @@ export function UsersTable(props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.slice(0, 10).map((item, index) => (
+            {filteredData?.slice(0, limit).map((item, index) => (
               <TableRow key={item.id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableHead>
@@ -62,8 +76,20 @@ export function UsersTable(props) {
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem onClick={() => navigator.clipboard.writeText("temkanibno@gmail.com")}>Copy Email</DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          onEditUser(item);
+                        }}
+                      >
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          onDeleteUser(item.id);
+                        }}
+                      >
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableHead>

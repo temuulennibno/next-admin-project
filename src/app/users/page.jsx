@@ -6,10 +6,13 @@ import { TypographyH3 } from "@/components/typography/h3";
 import { UsersTable } from "./table";
 import { UserCreateDialog } from "./user-create-dialog";
 import { useEffect, useState } from "react";
+import { UserEditDialog } from "./user-edit-dialog";
+import { toast } from "sonner";
 
 const Users = () => {
+  const [limit, setLimit] = useState(10);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-
+  const [editingUser, setEditingUser] = useState(null);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -19,6 +22,35 @@ const Users = () => {
         setData(data);
       });
   }, []);
+
+  const handleDelete = async (id) => {
+    const response = await fetch("/api/users/" + id, {
+      method: "DELETE",
+    });
+    const apiData = await response.json();
+    if (response.status !== 200) {
+      toast.error(apiData.message);
+    } else {
+      setData(data.filter((item) => item.id !== id));
+      toast.success(apiData.message);
+    }
+  };
+
+  const handleSave = async (values) => {
+    const response = await fetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify(values),
+    });
+    const { data: newData, message } = await response.json();
+
+    if (response.status === 200) {
+      toast.success(message);
+      setCreateModalOpen(false);
+      setData([...data, newData]);
+    } else {
+      toast.error(message);
+    }
+  };
 
   return (
     <div>
@@ -32,14 +64,24 @@ const Users = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <UsersTable data={data} />
+          <UsersTable onDeleteUser={handleDelete} onEditUser={setEditingUser} limit={limit} data={data} />
           <div className="flex justify-center p-8">
-            <Button variant="outline">Load more...</Button>
+            {limit < data.length && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setLimit(limit + 10);
+                }}
+              >
+                Load more...
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
 
-      <UserCreateDialog open={createModalOpen} onClose={setCreateModalOpen} />
+      <UserCreateDialog open={createModalOpen} onCreateUser={handleSave} onClose={setCreateModalOpen} />
+      <UserEditDialog user={editingUser} open={Boolean(editingUser)} onClose={setEditingUser} />
     </div>
   );
 };
